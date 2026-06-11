@@ -1,0 +1,10 @@
+[Unit]
+After=attach-ebs.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/settle-ebs.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=aws.target

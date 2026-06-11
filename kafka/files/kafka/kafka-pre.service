@@ -1,0 +1,13 @@
+[Unit]
+After=aws.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/kafka-pre.sh
+RemainAfterExit=yes
+
+StandardOutput=journal
+StandardError=inherit
+
+[Install]
+WantedBy=ready.target

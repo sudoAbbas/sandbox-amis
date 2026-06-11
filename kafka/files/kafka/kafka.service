@@ -1,0 +1,22 @@
+[Unit]
+Description=Kafka publish-subscribe messaging system
+Requires=kafka-pre.service
+After=kafka-pre.service
+
+[Service]
+User=kafka
+Group=kafka
+SyslogIdentifier=kafka
+LimitNOFILE=250000
+Environment='JAVA_HOME=/usr/lib/jvm/java-1.17.0-openjdk-amd64'
+
+ExecStartPre=/bin/bash -c "if [ ! \"$AWS_TAG_BROKER_MEMORY_PERCENTAGE\" ]; then /bin/systemctl set-environment AWS_TAG_BROKER_MEMORY_PERCENTAGE=40; fi"
+ExecStartPre=/bin/bash -c "/bin/systemctl set-environment USABLE_MEMORY=$(/usr/bin/awk -v percentage=$AWS_TAG_BROKER_MEMORY_PERCENTAGE '/MemTotal/ {print $2 / 1024 * ( percentage / 100 )}' /proc/meminfo | /usr/bin/awk -F'.' '{print ($1 > 8192) ? 8192 : $1}')"
+ExecStartPre=/bin/systemctl set-environment KAFKA_HEAP_OPTS="-Xms${USABLE_MEMORY}m -Xmx${USABLE_MEMORY}m"
+ExecStartPre=/bin/echo ${USABLE_MEMORY}
+ExecStart=/opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties
+ExecStop=/opt/kafka/bin/kafka-server-stop.sh
+
+[Install]
+WantedBy=ready.target
+

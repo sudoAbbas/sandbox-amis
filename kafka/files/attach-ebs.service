@@ -1,0 +1,10 @@
+[Unit]
+After=aws_metadata.service cloud-init.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/attach-ebs.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=aws.target
