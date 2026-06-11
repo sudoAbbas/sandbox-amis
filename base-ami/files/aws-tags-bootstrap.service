@@ -1,0 +1,12 @@
+[Unit]
+Description=EC2 Tag Bootstrap Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/bootstrap/aws-tags.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
